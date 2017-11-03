@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <title>画板</title>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_ylnoyzc60d1v2t9.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #canva {
+            color: orange;
+        }
+        .action {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 5px;
+            margin: 5px;
+        }
+        .icon {
+            font-size: 30px;
+            margin-left: 30px;
+        }
+        input[type="radio"] {
+            display: none;
+        }
+        input:checked~.icon {
+            font-size: 40px;
+            color: #44ffcc;
+        }
+        .icon2 {
+            font-size: 25px;
+            margin-left: 30px;
+            color: red;
+        }
+        .icon3 {
+            margin-left: 30px;
+            font-size: 25px;
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="action">
+        <label>
+      <input type="radio" name="penType" value="pen" checked>
+      <i class="iconfont icon">&#xe629;</i>
+    </label>
+        <label>
+      <input type="radio" name="penType" value="eraser">
+      <i class="iconfont icon">&#xe602;</i>
+    </label>
+        <i class="iconfont icon2" id="eliminate">&#xe652;</i>
+        <i class="iconfont icon3" id="save">&#xe66e;</i>
+
+    </div>
+    <canvas id="canva"></canvas>
+    <script>
+        var canvas = document.querySelector('#canva');
+        var clientWidth = document.documentElement.clientWidth;
+        var clientHeight = document.documentElement.clientHeight;
+        canvas.width = clientWidth;
+        canvas.height = clientHeight;
+        var context = canvas.getContext('2d');
+        var previousPoint;
+        canvas.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+            var penType = document.querySelector('input[name="penType"]:checked').value;
+            var pageX = e.touches[0].pageX;
+            var pageY = e.touches[0].pageY;
+            if (penType === 'pen') {
+                if (previousPoint) {
+                    context.strokeStyle = 'green';
+                    context.beginPath();
+                    context.moveTo(previousPoint.pageX, previousPoint.pageY);
+                    context.lineTo(pageX, pageY);
+                    context.stroke();
+                }
+                previousPoint = {
+                    'pageX': pageX,
+                    'pageY': pageY
+                };
+            } else if (penType === 'eraser') {
+                context.clearRect(pageX - 25, pageY - 25, 50, 50);
+            }
+        });
+        canvas.addEventListener('touchend', function () {
+            previousPoint = null;
+        });
+        save.onclick = function () {
+            var canvas = document.getElementById("canva");
+            var data = canvas.toDataURL("image/png");
+            var newWindow = window.open('about:blank', 'image from canvas');
+            newWindow.document.write("<img src='" + data + "' alt='from canvas'/>");
+        };
+        eliminate.onclick = function () {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        };
+    </script>
+</body>
+
+</html>
